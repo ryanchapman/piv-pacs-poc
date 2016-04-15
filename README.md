@@ -1,5 +1,5 @@
 
-v-pacs-poc
+# piv-pacs-poc
 
 Proof of concept which prepares a Yubikey NEO to be used in a HID pivCLASS physical access control system.
 
