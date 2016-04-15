@@ -1,0 +1,55 @@
+# Based on NIST Self-signed Trust Anchor Certificate
+# http://csrc.nist.gov/groups/SNS/piv/documents/test-piv-card-data-specifications.pdf section 4.1.1
+
+[ ca ]
+default_ca      = CA_trustanchor_selfsign
+
+[ CA_trustanchor_selfsign ]
+dir             = ./
+certs           = $dir
+crl_dir         = $dir/trustanchor-ca-crl
+database        = $dir/trustanchor-ca-index.txt
+new_certs_dir   = $dir
+certificate     = $dir/trustanchor-ca.pem
+serial          = $dir/trustanchor-ca-serial
+crl             = $dir/trustanchor-ca-crl.pem
+private_key     = $dir/trustanchor-ca.key
+RANDFILE        = $dir/.rand
+name_opt        = ca_default
+cert_opt        = ca_default
+default_days    = 7300
+default_crl_days= 30
+default_md      = sha256
+preserve        = no
+policy          = policy_match
+
+[ policy_match ]
+countryName		        = match
+stateOrProvinceName	    = match
+organizationName	    = match
+organizationalUnitName	= optional
+commonName		        = supplied
+emailAddress		    = optional
+
+[ req ]
+prompt			    = no
+distinguished_name	= certificate_authority
+default_bits		= 2048
+input_password		= whatever
+output_password		= whatever
+x509_extensions		= v3_ca
+
+[certificate_authority]
+countryName		    = US
+stateOrProvinceName	= New York
+localityName		= New York
+organizationName	= Initech Inc.
+commonName		    = "trustanchor.myorg.com"
+
+[v3_ca]
+subjectInfoAccess       = caRepository;URI:http://certs.myorg.com/CACertsIssuedByTrustAnchor.p7c
+
+subjectKeyIdentifier    = hash
+keyUsage                = critical,keyCertSign,cRLSign
+basicConstraints        = critical,CA:true
+

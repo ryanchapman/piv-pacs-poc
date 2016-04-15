@@ -1,0 +1,11 @@
+org.keysupport.asn1
+org.keysupport.encoding
+org.keysupport.encoding.der
+org.keysupport.encoding.der.structures
+org.keysupport.globalplatform
+org.keysupport.keystore
+org.keysupport.nist80073
+org.keysupport.nist80073.cardedge
+org.keysupport.nist80073.datamodel
+org.keysupport.smartcardio
+org.keysupport.util

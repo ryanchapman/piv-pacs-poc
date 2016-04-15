@@ -1,0 +1,4 @@
+This package should only contain Java Classes which represent ASN.1 DER 
+objects.  Encoding is and Decoding is performed by these classes and the
+BERTLVFactory.  The BERTLV factory encodes more in alignment with DER
+than BER.

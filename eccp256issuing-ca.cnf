@@ -1,0 +1,72 @@
+# An intermediate CA based on ECC P-256 Issuing CA Certificate
+# http://csrc.nist.gov/groups/SNS/piv/documents/test-piv-card-data-specifications.pdf section 4.1.4
+[ ca ]
+default_ca              = CA_eccp256issuingCA
+
+[ CA_eccp256issuingCA ]
+dir                     = ./
+certs                   = $dir
+crl_dir                 = $dir/eccp256issuing-ca-crl
+database                = $dir/eccp256issuing-ca-index.txt
+new_certs_dir           = $dir
+certificate             = $dir/eccp256issuing-ca.pem
+serial                  = $dir/eccp256issuing-ca-serial
+crl                     = $dir/eccp256issuing-ca-crl.pem
+private_key             = $dir/eccp256issuing-ca.key
+RANDFILE                = $dir/.rand
+name_opt                = ca_default
+cert_opt                = ca_default
+default_days            = 7300
+# TODO: change to 1 when ready to regenerate CRL every day
+default_crl_days       = 30
+default_md              = sha256
+preserve                = no
+policy                  = policy_match
+# TODO: generate ECCP-256CA.crl
+crlDistributionPoints   = URI:http://crl.myorg.com/ECCP-256CA.crl
+x509_extensions         = v3_ca
+
+[ policy_match ]
+countryName		        = match
+stateOrProvinceName	    = match
+organizationName	    = match
+organizationalUnitName	= optional
+commonName		        = supplied
+emailAddress		    = optional
+
+[ req ]
+prompt			    = no
+distinguished_name	= certificate_authority
+default_bits		= 2048
+input_password		= whatever
+output_password		= whatever
+x509_extensions		= v3_ca
+
+# NOTE: Be mindful of the fact that a Yubikey NEO's CHUID container (0x3000, 0x5fc102)
+#       is small, and three certs have to fit in the container:
+#       1. Trust Anchor Root CA
+#       2. ECC P-256 Intermediate CA
+#       3. PIV Content Signer cert
+#       So you may want to keep what you put in the certs to a minimum
+[certificate_authority]
+countryName		    = US
+stateOrProvinceName	= New York
+localityName		= New York
+organizationName	= Initech Inc.
+commonName		    = "ecc-p256-ca.myorg.com"
+
+[v3_ca]
+keyUsage                = critical,keyCertSign,cRLSign
+basicConstraints	    = critical,CA:true
+authorityKeyIdentifier  = keyid:always
+
+subjectKeyIdentifier	= hash
+crlDistributionPoints	= URI:http://crl.myorg.com/TrustAnchor.crl
+
+authorityInfoAccess     = caIssuers;URI:http://certs.myorg.com/CACertsIssuedToTrustAnchor.p7c
+
+certificatePolicies     = 2.16.840.1.101.3.2.1.3.7,2.16.840.1.101.3.2.1.3.8,2.16.840.1.101.3.2.1.3.13,2.16.840.1.101.3.2.1.3.17
+
+# TODO: Generate
+# see http://smime2.nist.gov/PIVTest/CACertsIssuedByECCP-256CA.p7c
+subjectInfoAccess       = caRepository;URI:http://certs.myorg.com/CACertsIssuedByECCP-256CA.p7c

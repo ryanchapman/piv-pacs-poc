@@ -1,0 +1,100 @@
+# NIST Test PIV Card 4: PIV Auth Certificate (slot 9A)
+# PIV Card application PIN: 123456
+# Global PIN: 12345678
+# Objects signed by: PIV Card Signer (eccp256pivcontentsigner.{pem,key})
+
+[ ca ]
+default_ca              = CA_eccp256issuingCA
+
+[ CA_eccp256issuingCA ]
+dir                     = ./
+certs                   = $dir
+crl_dir                 = $dir/eccp256issuing-ca-crl
+database                = $dir/eccp256issuing-ca-index.txt
+new_certs_dir           = $dir
+certificate             = $dir/eccp256issuing-ca.pem
+serial                  = $dir/eccp256issuing-ca-serial
+crl                     = $dir/eccp256issuing-ca-crl.pem
+private_key             = $dir/eccp256issuing-ca.key
+RANDFILE                = $dir/.rand
+name_opt                = ca_default
+cert_opt                = ca_default
+default_days            = 7300
+# TODO: change to 1 when ready to regenerate CRL every day
+ default_crl_days       = 30
+default_md              = sha256
+preserve                = no
+policy                  = policy_match
+x509_extensions         = v3_ca
+
+[ policy_match ]
+countryName		        = match
+stateOrProvinceName	    = match
+organizationName	    = match
+organizationalUnitName	= optional
+commonName		        = supplied
+emailAddress		    = optional
+subjectAltName          = optional
+
+[ req ]
+prompt			    = no
+distinguished_name	= client
+default_bits		= 2048
+input_password		= whatever
+output_password		= whatever
+req_extensions      = v3_req
+
+[client]
+countryName		    = US
+stateOrProvinceName	= New York
+localityName		= New York
+organizationName	= Initech Inc.
+emailAddress		= test-ecc-1-9a@myorg.com
+commonName	  	    = test-ecc-1-9a@myorg.com
+
+[v3_ca]
+authorityKeyIdentifier  = keyid:always
+
+subjectKeyIdentifier    = hash
+crlDistributionPoints   = URI:http://crl.myorg.com/ECCP-256CA.crl
+
+authorityInfoAccess     = caIssuers;URI:http://certs.myorg.com/CACertsIssuedToECCP-256CA.p7c
+
+keyUsage                = critical,digitalSignature
+# TLS Client Authentication is .3.6.1.5.5.7.3.2
+# Microsoft Smartcardlogin  is 1.3.6.1.4.1.311.20.2.2
+# Any Purpose               is 2.5.29.37.0
+extendedKeyUsage        = 1.3.6.1.5.5.7.3.2,1.3.6.1.4.1.311.20.2.2,2.5.29.37.0
+#                                            TEST                        PROD
+# PIV: authentication cert (slot 9A).......: 2.16.840.1.101.3.2.1.48.11  2.16.840.1.101.3.2.1.3.13
+# PIV: card authentication cert (slot 9E)..: 2.16.840.1.101.3.2.1.48.13  2.16.840.1.101.3.2.1.3.17
+# PIV: content signing cert (slot 9C)......: 2.16.840.1.101.3.2.1.48.10  2.16.840.1.101.3.2.1.3.8
+# PIV: CHUID: federal agency code in the FASC-N
+#
+#                                            TEST                        PROD
+# PIV-I: authentication cert (slot 9A).....: 2.16.840.1.101.3.2.1.48.78  2.16.840.1.101.3.2.1.3.18
+# PIV-I: card authentication cert (slot 9E): 2.16.840.1.101.3.2.1.48.79  2.16.840.1.101.3.2.1.3.19
+# PIV-I: content signing cert (slot 9C)....: 2.16.840.1.101.3.2.1.48.80  2.16.840.1.101.3.2.1.3.20
+# PIV-I: CHUID: 14 nines (99999999999999) in the FASC-N
+certificatePolicies     = 2.16.840.1.101.3.2.1.3.18
+
+# PIV: id-piv-NACI aka id-piv-interim is 2.16.840.1.101.3.6.9.1 according to
+# https://www.idmanagement.gov/IDM/servlet/fileField?entityId=ka0t0000000TNP2AAO&field=File__Body__s
+# however it is 2.16.840.1.101.3.6.10.1 according ot FIPS 201-2, appendix B.2
+# This is a background investigation indicator.
+# see FIPS 201-2, appendix B.2
+# TRUE if, at the time of credential issuance, (1) the FBI National
+#      Criminal History Fingerprint Check has completed successfully,
+#      and (2) a NACI has been initiated but not completed
+# FALSE if, at the time of credential issuance, the subject's NACI has
+#       been completed and successfully adjudicated.
+#2.16.840.1.101.3.6.9.1  = ASN1:BOOLEAN:FALSE
+# NOTE: FASC-N is not required in the subjectAltName section for non-federal issuers. It is only contained in the CHUID.
+# See ICAM PIV-I FAQ at https://www.idmanagement.gov/IDM/servlet/fileField?entityId=ka0t0000000TNPlAAO&field=File__Body__s
+# section 2.33 "Where does the FASC-N appear on the PIV-I card?"
+#urn:idmanagement.gov:icam:bae:v2:SAML:2.0:nameid-format:fasc-n   (OID=2.16.840.1.101.3.6.6)
+# TODO: change to non hard coded GUID once testing complete
+#subjectAltName          = otherName:msUPN;UTF8:DOMAIN\test-ecc-1-9a,URI:urn:uuid:d18b1e0d-3938-4601-9f5f-b9a6d0442e4d
+subjectAltName          = otherName:msUPN;UTF8:DOMAIN\test-ecc-1-9a,URI:urn:uuid:$ENV::OPENSSL_PIV_GUID
+
+[v3_req]
