@@ -3,6 +3,11 @@
 
 Proof of concept which prepares a Yubikey NEO to be used in a HID pivCLASS physical access control system.
 
+## Full Documentation
+
+The instructions in the Usage section below only cover using the code in this repository to build the certificate authorities and client certs.  It will also load the client certs onto a YubiKey NEO.
+For full documentation on how to get this to work with a physical access control system, see https://docs.google.com/document/d/1fOFzxfpgi8P-HVRdtnWiTNGCDRgeXcvorEqoSXA_4sE
+
 ## Usage
 
 Tested with: Mac OS X 10.10.5, HID pivCLASS PACS Service v1.2.297.0, [HID pivCLASS Authentication Module (PAM)](http://www.hidglobal.com/products/controllers/pivclass/pivclass-authentication-module) v5.1.8
